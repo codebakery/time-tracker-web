@@ -1,0 +1,27 @@
+{
+  "name": "time-tracker-web",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "eslint": "3.9.1",
+    "eslint-plugin-react": "6.5.0",
+    "react-scripts": "0.7.0"
+  },
+  "dependencies": {
+    "http-client": "^4.3.1",
+    "react": "15.3.2",
+    "react-dom": "15.3.2",
+    "react-redux": "^4.4.5",
+    "react-router": "^4.0.0-alpha.5",
+    "redux": "^3.6.0",
+    "redux-logger": "^2.7.4",
+    "redux-thunk": "^2.1.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:8000"
+}
