@@ -78,3 +78,7 @@ export const getProjects = () => {
 export const getRecords = (dateFrom = '', dateTo = '', userId = '', projectName = '') => {
   return client.get(`/records/?date_0=${dateFrom}&date_1=${dateTo}&user=${userId}&project${projectName}`);
 };
+
+export const addRecord = (date, payload) => {
+  return client.post('/records/', {date, ...payload});
+};

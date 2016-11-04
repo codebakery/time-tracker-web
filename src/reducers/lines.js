@@ -1,8 +1,8 @@
 import types from '../actions/lines';
 
-const emptyLine = {
-  project: null,
-  hours: '',
+export const emptyLine = {
+  project: '',
+  time_spent: '',
   issue: '',
   comment: '',
 };
@@ -24,6 +24,12 @@ export default function reducer(state = initialState, action = {}) {
         Object.assign({}, state[action.index], {[action.field]: action.value}),
         ...state.slice(action.index + 1),
       ];
+
+    case types.CLEAR_LINE:
+      return [...state.slice(0, action.index), ...state.slice(action.index + 1)];
+
+    case types.CLEAR:
+      return initialState;
 
     default:
       return state;

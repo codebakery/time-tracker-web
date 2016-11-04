@@ -3,8 +3,9 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router';
 import moment from 'moment';
 import { projectsLoadRequest } from '../actions/projects';
-import { recordsLoadRequest } from '../actions/records';
-import { addLine, removeLine, editLine } from '../actions/lines';
+import { recordsLoadRequest, recordSubmitRequest } from '../actions/records';
+import { addLine, removeLine, editLine, clearLine, clearLines } from '../actions/lines';
+import { emptyLine } from '../reducers/lines';
 import ErrorList from '../components/ErrorList';
 
 class ReportScreen extends Component {
@@ -29,24 +30,34 @@ class ReportScreen extends Component {
   onSubmit(event) {
     event.preventDefault();
     for (const line of this.props.lines) {
-      console.log(line);
+      if (line !== emptyLine) {
+        const payload = {
+          project: line.project,
+          comment: line.comment,
+          time_spent: line.time_spent,
+        };
+        if (line.issue) {
+          payload.issue = line.issue;
+        }
+        this.props.recordSubmitRequest(this.props.params.date, payload);
+      }
     }
   }
 
   renderLine(line, index) {
     return (
       <div key={index}>
-        <select onChange={(event) => this.props.editLine(index, 'project', event.target.value)}>
-          <option value={null}>---- </option>
+        <select value={line.project} onChange={(event) => this.props.editLine(index, 'project', event.target.value)}>
+          <option value="">----</option>
           {this.props.projects.map((project) => (
-            <option selected={line.project == project.id} key={project.id} value={project.id}>{project.name}</option>
+            <option key={project.id} value={project.id}>{project.name}</option>
           ))}
         </select>
         <input
-          placeholder="hours"
+          placeholder="time_spent"
           type="text"
-          value={line.hours}
-          onChange={(event) => this.props.editLine(index, 'hours', event.target.value)}
+          value={line.time_spent}
+          onChange={(event) => this.props.editLine(index, 'time_spent', event.target.value)}
         />
         <input
           placeholder="issue"
@@ -77,7 +88,13 @@ class ReportScreen extends Component {
     }
     return (
       <div>
-        <div>Report for {m.format('YYYY-MM-DD')}</div>
+        <h3>Report for {m.format('YYYY-MM-DD')}</h3>
+        <div>
+          <h4>Records:</h4>
+          {this.props.records.map((record) => (
+            this.renderLine(record)
+          ))}
+        </div>
         <div>
           <Link to={`/report/${m.clone().subtract(1, 'days').format('YYYY-MM-DD')}`}>&larr; Previous day</Link>
           &nbsp;
@@ -86,12 +103,13 @@ class ReportScreen extends Component {
         <div>
           <button onClick={this.props.addLine}>+</button>
           <button onClick={this.props.removeLine}>-</button>
+          <button onClick={this.props.clearLines}>clear</button>
         </div>
         <div>
           {this.props.lines.map(this.renderLine)}
         </div>
         <div>
-          <button onClick={this.onSubmit}>Submit</button>
+          <button disabled={this.props.loading} onClick={this.onSubmit}>Submit</button>
         </div>
       </div>
     );
@@ -101,8 +119,10 @@ class ReportScreen extends Component {
 
 export default connect(
   (state) => ({
-    projects: state.projects.projectList,
     lines: state.lines,
+    loading: state.records.loading,
+    projects: state.projects.projectList,
+    records: state.records.recordList,
   }),
   {
     projectsLoadRequest,
@@ -110,5 +130,8 @@ export default connect(
     addLine,
     removeLine,
     editLine,
+    clearLine,
+    clearLines,
+    recordSubmitRequest,
   }
 )(ReportScreen);
