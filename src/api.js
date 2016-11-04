@@ -15,6 +15,7 @@ const authHeader = () => (fetch, input, options = {}) => {
 
 const createClient = (...middlewares) => {
   const fetch = createFetch(...middlewares);
+  const deleteFetch = createFetch(...middlewares.slice(0, -1));
   return {
     get: fetch,
     post: (url, data) => fetch(url, {
@@ -26,7 +27,7 @@ const createClient = (...middlewares) => {
       body: JSON.stringify(data),
     }),
     delete: (url) => {
-      return fetch(url, {
+      return deleteFetch(url, {
         method: 'delete',
       });
     },
@@ -76,9 +77,19 @@ export const getProjects = () => {
 };
 
 export const getRecords = (dateFrom = '', dateTo = '', userId = '', projectName = '') => {
-  return client.get(`/records/?date_0=${dateFrom}&date_1=${dateTo}&user=${userId}&project${projectName}`);
+  return client.get(`/records/?limit=999999&date_0=${dateFrom}&date_1=${dateTo}&user=${userId}&project${projectName}`);
 };
 
-export const addRecord = (date, payload) => {
-  return client.post('/records/', {date, ...payload});
+export const addOrEditRecord = (date, payload) => {
+  const { id, ...rest } = payload;
+  if (id) {
+    return client.put(`/records/${id}/`, {date, ...rest});
+  } else {
+    return client.post('/records/', {date, ...rest});
+  }
 };
+
+export const removeRecord = (id) => {
+  return client.delete(`/records/${id}/`);
+};
+
