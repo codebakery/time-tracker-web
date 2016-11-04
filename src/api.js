@@ -70,3 +70,11 @@ export const getCurrentUser = () => {
     return client.get(localStorage.getItem('USER_URL'));
   }
 };
+
+export const getProjects = () => {
+  return client.get('/projects/');
+};
+
+export const getRecords = (dateFrom = '', dateTo = '', userId = '', projectName = '') => {
+  return client.get(`/records/?date_0=${dateFrom}&date_1=${dateTo}&user=${userId}&project${projectName}`);
+};

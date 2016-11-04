@@ -1,9 +1,10 @@
 import React from 'react';
 
-export default () => {
+const NotFoundScreen = () => {
   return (
     <div>
       404
     </div>
   );
 };
+export default NotFoundScreen;

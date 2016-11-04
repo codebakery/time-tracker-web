@@ -14,8 +14,8 @@ const types = {
 export default types;
 
 
-export const loginSuccess = () => ({ type: types.LOGIN_SUCCESS });
-export const loginFailure = () => ({ type: types.LOGIN_FAILURE });
+export const loginSuccess = (currentUser) => ({ type: types.LOGIN_SUCCESS, currentUser });
+export const loginFailure = (errors) => ({ type: types.LOGIN_FAILURE, errors });
 export const logout = () => ({ type: types.LOGOUT });
 
 export const loginRequest = (username, password) => dispatch => {
@@ -24,15 +24,9 @@ export const loginRequest = (username, password) => dispatch => {
   });
   return api.login(username, password).then((response) => {
     if (response.ok) {
-      dispatch({
-        type: types.LOGIN_SUCCESS,
-        currentUser: response.jsonData,
-      });
+      dispatch(loginSuccess(response.jsonData));
     } else {
-      dispatch({
-        type: types.LOGIN_FAILURE,
-        errors: response.jsonData,
-      });
+      dispatch(loginFailure(response.jsonData));
     }
   });
 };
@@ -43,15 +37,9 @@ export const autoLogin = () => dispatch => {
   });
   return api.getCurrentUser().then((response) => {
     if (response.ok) {
-      dispatch({
-        type: types.LOGIN_SUCCESS,
-        currentUser: response.jsonData,
-      });
+      dispatch(loginSuccess(response.jsonData));
     } else {
-      dispatch({
-        type: types.LOGIN_FAILURE,
-        errors: [],
-      });
+      dispatch(loginFailure([]));
     }
   });
 };
@@ -62,8 +50,6 @@ export const logoutRequest = (username, password) => dispatch => {
     type: types.LOGOUT_REQUEST,
   });
   return api.logout().then(() => {
-    dispatch({
-      type: types.LOGOUT,
-    });
+    dispatch(logout());
   });
 };

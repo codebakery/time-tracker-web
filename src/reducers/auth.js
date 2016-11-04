@@ -9,10 +9,10 @@ const initialState = {
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
     case types.LOGIN_SUCCESS:
-      return { currentUser: action.currentUser, errors: [], authorized: true };
+      return { ...state, currentUser: action.currentUser, errors: [], authorized: true };
 
     case types.LOGIN_FAILURE:
-      return { currentUser: null, errors: action.errors, authorized: false };
+      return { ...state, currentUser: null, errors: action.errors, authorized: false };
 
     case types.LOGOUT:
       return initialState;
