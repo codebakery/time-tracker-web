@@ -6,6 +6,7 @@ import { projectsLoadRequest } from '../actions/projects';
 import { recordsLoadRequest, recordSubmitRequest, recordRemoveRequest, addRecord, editRecord, reset } from '../actions/records';
 import { emptyRecord } from '../reducers/records';
 
+
 class ReportScreen extends Component {
 
   constructor(props) {
@@ -73,7 +74,7 @@ class ReportScreen extends Component {
           value={record.description}
           onChange={(event) => this.props.editRecord(index, 'description', event.target.value)}
         />
-        {record.id ? (<button onClick={() => this.props.recordRemoveRequest(record.id, index)}>-</button>): null}
+        {record.id ? <button onClick={() => confirm('Are you sure you want to remove this record?') && this.props.recordRemoveRequest(record.id, index)}>-</button> : null}
       </div>
     );
   }
@@ -92,6 +93,7 @@ class ReportScreen extends Component {
     return (
       <div>
         <h3>Report for {m.format('YYYY-MM-DD')}</h3>
+        <h3>Total time: {this.props.totalTime} hours</h3>
         <div>
           <Link to={`/report/${m.clone().subtract(1, 'days').format('YYYY-MM-DD')}`}>&larr; Previous day</Link>
           &nbsp;
@@ -112,11 +114,17 @@ class ReportScreen extends Component {
 
 }
 
+function parseTime(record) {
+  const result = parseFloat(record.time_spent);
+  return isNaN(result) ? 0 : result;
+}
+
 export default connect(
   (state) => ({
     loading: state.records.loading,
     projects: state.projects.projectList,
     records: state.records.recordList,
+    totalTime: state.records.recordList.map(parseTime).reduce((a, b) => a + b),
   }),
   {
     projectsLoadRequest,
@@ -125,6 +133,6 @@ export default connect(
     editRecord,
     recordSubmitRequest,
     recordRemoveRequest,
-    reset
+    reset,
   }
 )(ReportScreen);
