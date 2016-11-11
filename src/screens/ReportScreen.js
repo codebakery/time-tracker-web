@@ -127,6 +127,7 @@ class ReportScreen extends Component {
             {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
             {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
             {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
           </tbody>
         </table>
       </div>
