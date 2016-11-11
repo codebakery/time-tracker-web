@@ -80,13 +80,13 @@ class ReportScreen extends Component {
   }
 
   weekdayProc(m, weekday, curMonth, curMoment) {
-    if (curMoment.diff(m, 'days') === 0) {
-      const result = <span style={{color: 'red', fontWeight: 'bold'}}>{m.format('DD')}</span>;
-      m.add(1, 'days');
-      return result;
-    }
     if (m.weekday() === weekday && m.month() === curMonth) {
-      const result = <Link to={`/report/${m.clone().format('YYYY-MM-DD')}`}>{m.format('DD')}</Link>;
+      let result = null;
+      if (curMoment.diff(m, 'days') === 0) {
+        result = <span style={{color: 'red', fontWeight: 'bold'}}>{m.format('DD')}</span>;
+      } else {
+        result = <Link to={`/report/${m.clone().format('YYYY-MM-DD')}`}>{m.format('DD')}</Link>;
+      }
       m.add(1, 'days');
       return result;
     }
@@ -106,11 +106,11 @@ class ReportScreen extends Component {
   }
 
   renderMonth(month, year, curMoment) {
-    const curDate = moment({year, month, day: 1});
-    const lastDate = curDate.clone().endOf('month');
+    const curDate = moment({year, month, day: 1}).startOf('day');
+    const lastDate = curDate.clone().endOf('month').startOf('day');
     return (
       <div style={{margin: '15px'}}>
-        <h4>{curDate.format('MMMM')}</h4>
+        <h4>{curDate.format('MMMM')} {curDate.format('YYYY')}</h4>
         <table>
           <tbody>
             <tr>
@@ -122,12 +122,12 @@ class ReportScreen extends Component {
               <th>Sat</th>
               <th>Sun</th>
             </tr>
-            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
-            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
-            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
-            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
-            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
-            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'hours') <= 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'hours') <= 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'hours') <= 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'hours') <= 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'hours') <= 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'hours') <= 0 ? this.renderCalRow(curDate, curMoment) : null}
           </tbody>
         </table>
       </div>
