@@ -79,6 +79,60 @@ class ReportScreen extends Component {
     );
   }
 
+  weekdayProc(m, weekday, curMonth, curMoment) {
+    if (curMoment.diff(m, 'days') === 0) {
+      const result = <span style={{color: 'red', fontWeight: 'bold'}}>{m.format('DD')}</span>;
+      m.add(1, 'days');
+      return result;
+    }
+    if (m.weekday() === weekday && m.month() === curMonth) {
+      const result = <Link to={`/report/${m.clone().format('YYYY-MM-DD')}`}>{m.format('DD')}</Link>;
+      m.add(1, 'days');
+      return result;
+    }
+  }
+
+  renderCalRow(m, curMoment) {
+    const curMonth = m.month();
+    return (<tr>
+      <td>{this.weekdayProc(m, 1, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 2, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 3, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 4, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 5, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 6, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 0, curMonth, curMoment)}</td>
+    </tr>);
+  }
+
+  renderMonth(month, year, curMoment) {
+    const curDate = moment({year, month, day: 1});
+    const lastDate = curDate.clone().endOf('month');
+    return (
+      <div style={{margin: '15px'}}>
+        <h4>{curDate.format('MMMM')}</h4>
+        <table>
+          <tbody>
+            <tr>
+              <th>Mon</th>
+              <th>Tue</th>
+              <th>Wed</th>
+              <th>Thu</th>
+              <th>Fri</th>
+              <th>Sat</th>
+              <th>Sun</th>
+            </tr>
+            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+            {curDate.diff(lastDate, 'days') < 0 ? this.renderCalRow(curDate, curMoment) : null}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
   render() {
     const m = moment(this.props.params.date, 'YYYY-MM-DD');
     if (!m.isValid()) {
@@ -90,15 +144,12 @@ class ReportScreen extends Component {
         />
       );
     }
+    const prevMonth = m.clone().startOf('month').subtract(1, 'month');
+    const nextMonth = m.clone().startOf('month').add(1, 'month');
     return (
       <div>
         <h3>Report for {m.format('YYYY-MM-DD')}</h3>
         <h3>Total time: {this.props.totalTime} hours</h3>
-        <div>
-          <Link to={`/report/${m.clone().subtract(1, 'days').format('YYYY-MM-DD')}`}>&larr; Previous day</Link>
-          &nbsp;
-          <Link to={`/report/${m.clone().add(1, 'days').format('YYYY-MM-DD')}`}>Next day &rarr;</Link>
-        </div>
         <div>
           <button onClick={this.props.addRecord}>+</button>
         </div>
@@ -107,6 +158,11 @@ class ReportScreen extends Component {
         </div>
         <div>
           <button disabled={this.props.loading} onClick={this.onSubmit}>Submit</button>
+        </div>
+        <div style={{display: 'flex'}}>
+        {this.renderMonth(prevMonth.month(), prevMonth.year(), m)}
+        {this.renderMonth(m.month(), m.year(), m)}
+        {this.renderMonth(nextMonth.month(), nextMonth.year(), m)}
         </div>
       </div>
     );
