@@ -79,13 +79,29 @@ class ReportScreen extends Component {
     );
   }
 
-  weekdayProc(m, weekday, curMonth, curMoment) {
+  weekdayProc(m, weekday, curMonth, curMoment, now) {
     if (m.weekday() === weekday && m.month() === curMonth) {
       let result = null;
       if (curMoment.diff(m, 'days') === 0) {
-        result = <span style={{color: 'red', fontWeight: 'bold'}}>{m.format('DD')}</span>;
+        result = <span style={{fontWeight: 'bold'}}>{m.format('DD')}</span>;
       } else {
-        result = <Link to={`/report/${m.clone().format('YYYY-MM-DD')}`}>{m.format('DD')}</Link>;
+        let style = {};
+        if (now.diff(m, 'days') === 0) {
+          style = {
+            ...style,
+            color: 'white',
+            fontWeight: 'bold',
+            backgroundColor: 'red',
+          };
+        } else if (weekday === 6 || weekday === 0) {
+          style.color = 'red';
+        }
+        result = (
+          <Link
+            style={style}
+            to={`/report/${m.clone().format('YYYY-MM-DD')}`}
+          >{m.format('DD')}</Link>
+        );
       }
       m.add(1, 'days');
       return result;
@@ -94,14 +110,15 @@ class ReportScreen extends Component {
 
   renderCalRow(m, curMoment) {
     const curMonth = m.month();
+    const now = moment().startOf('day');
     return (<tr>
-      <td>{this.weekdayProc(m, 1, curMonth, curMoment)}</td>
-      <td>{this.weekdayProc(m, 2, curMonth, curMoment)}</td>
-      <td>{this.weekdayProc(m, 3, curMonth, curMoment)}</td>
-      <td>{this.weekdayProc(m, 4, curMonth, curMoment)}</td>
-      <td>{this.weekdayProc(m, 5, curMonth, curMoment)}</td>
-      <td>{this.weekdayProc(m, 6, curMonth, curMoment)}</td>
-      <td>{this.weekdayProc(m, 0, curMonth, curMoment)}</td>
+      <td>{this.weekdayProc(m, 1, curMonth, curMoment, now)}</td>
+      <td>{this.weekdayProc(m, 2, curMonth, curMoment, now)}</td>
+      <td>{this.weekdayProc(m, 3, curMonth, curMoment, now)}</td>
+      <td>{this.weekdayProc(m, 4, curMonth, curMoment, now)}</td>
+      <td>{this.weekdayProc(m, 5, curMonth, curMoment, now)}</td>
+      <td>{this.weekdayProc(m, 6, curMonth, curMoment, now)}</td>
+      <td>{this.weekdayProc(m, 0, curMonth, curMoment, now)}</td>
     </tr>);
   }
 
@@ -150,6 +167,11 @@ class ReportScreen extends Component {
     return (
       <div>
         <h3>Report for {m.format('YYYY-MM-DD')}</h3>
+        <div style={{display: 'flex'}}>
+          {this.renderMonth(prevMonth.month(), prevMonth.year(), m)}
+          {this.renderMonth(m.month(), m.year(), m)}
+          {this.renderMonth(nextMonth.month(), nextMonth.year(), m)}
+        </div>
         <h3>Total time: {this.props.totalTime} hours</h3>
         <div>
           <button onClick={this.props.addRecord}>+</button>
@@ -159,11 +181,6 @@ class ReportScreen extends Component {
         </div>
         <div>
           <button disabled={this.props.loading} onClick={this.onSubmit}>Submit</button>
-        </div>
-        <div style={{display: 'flex'}}>
-        {this.renderMonth(prevMonth.month(), prevMonth.year(), m)}
-        {this.renderMonth(m.month(), m.year(), m)}
-        {this.renderMonth(nextMonth.month(), nextMonth.year(), m)}
         </div>
       </div>
     );
