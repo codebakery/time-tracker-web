@@ -73,7 +73,7 @@ export const getCurrentUser = () => {
 };
 
 export const getProjects = () => {
-  return client.get('/projects/');
+  return client.get('/projects/?limit=999999');
 };
 
 export const getRecords = (dateFrom = '', dateTo = '', userId = '', projectName = '') => {
